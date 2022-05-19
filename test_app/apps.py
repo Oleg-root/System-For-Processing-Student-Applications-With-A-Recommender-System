@@ -9,6 +9,6 @@ class TestAppConfig(AppConfig):
         import test_app.signals
 
         # @todo uncomment this for weekly update of the topics
-        # from topics_updater import update
-        # update.start()
+        from topics_updater import update
+        update.start()
 
