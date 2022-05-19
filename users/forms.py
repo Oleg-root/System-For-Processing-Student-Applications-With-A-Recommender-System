@@ -13,7 +13,7 @@ class UserRegisterForm(UserCreationForm):
     first_name = forms.CharField(max_length=100, label='Ваше Имя', required=True)
     last_name = forms.CharField(max_length=100, label='Ваша Фамилия', required=True)
     patronym = forms.CharField(max_length=100, label='Ваше Отчество')
-    student_or_lecturer = forms.ChoiceField(label='Кем вы являетесь?',choices=WHOAMI_CHOICES ,widget=forms.RadioSelect, required=True)
+    student_or_lecturer = forms.ChoiceField(label='Кем вы являетесь?', choices=WHOAMI_CHOICES ,widget=forms.RadioSelect, required=True)
 
     class Meta: # Gives us nested namespace for configurations and keeps the configurations in one space
         model = User # model that will be affected (form.save() - save it to the User model)

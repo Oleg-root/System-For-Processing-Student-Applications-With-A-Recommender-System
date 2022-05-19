@@ -12,7 +12,7 @@ def register(request):
         if request.method == "POST":
             form = UserRegisterForm(request.POST)
             if form.is_valid():
-                if form.patronym:
+                if form.cleaned_data.get('patronym'):
                     variables.append(form.cleaned_data.get('patronym'))
                     variables.append(form.cleaned_data.get('student_or_lecturer'))
                 form.save()
