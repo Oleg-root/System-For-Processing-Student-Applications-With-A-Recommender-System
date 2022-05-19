@@ -1,0 +1,18 @@
+{% extends "test_app/base.html" %}
+{% block content %}
+    <div class="content-section">
+        <form method="POST" enctype="multipart/form-data">
+            {% csrf_token %}
+            <fieldset class="form-group">
+                <legend class="border-bottom mb-4">Удалить заявку </legend>
+                <h3>Вы уверены, что хотите удалить эту заявку?</h3>
+                <p></p>
+                <p><b>Замечание: </b>Это действие необратимо.</p>
+            </fieldset>
+            <div class="form-group">
+                <button class="btn btn-outline-danger" type="submit">Да, удалить заявку</button>
+                <a class="btn btn-outline-secondary" href="{% url 'student-requests' %}">Отмена</a>
+            </div>
+        </form>
+    </div>
+{% endblock content %}

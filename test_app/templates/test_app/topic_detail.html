@@ -1,0 +1,50 @@
+{% extends "test_app/base.html" %}
+{% block content %}
+    <article class="media content-section">
+        <img class="rounded-circle article-img" src="{{ object.lecturer.profile.image.url }}">
+        <div class="media-body">
+            <div class="article-metadata">
+                <a class="mr-2" href="{% url 'user-topics' topic.lecturer.username %}">{{ object.lecturer.first_name }} {{ object.lecturer.last_name }}</a>
+                <small class="text-muted">{{ object.date_created|date:"F d, Y" }}</small>
+
+            </div>
+            <h3 class="article-title">{{ object.name_russian }}</h3>
+            {% if object.description %}
+                <p class="article-content"><b>Описание: </b>{{ object.description }}</p>
+            {% else %}
+                <p>Описание отсутствует.</p>
+            {% endif %}
+            <p>
+                {% for interest in object.lecturer.profile.interests_as_list %}
+                    <span class="badge badge-primary">{{ interest }}</span>
+                {% endfor %}
+            </p>
+            {% if object.lecturer == user %}
+                    <div>
+                        <a class="btn btn-outline-warning" href="{% url 'topic-update' object.id %}">Редактировать</a>
+                        <a class="btn btn-outline-danger" href="{% url 'topic-delete' object.id %}">Удалить</a>
+                    </div>
+                {% endif %}
+            {% if user.is_authenticated %}
+                {% if object.lecturer != user %}
+                    {% if user.is_lecturer %} {% else %}
+                        <a class="btn btn-outline-info" href="{% url 'create-request' object.id %}">Подать заявку на эту тему</a>
+                        <a class="btn btn-outline-info" href="{% url 'create-request-no-topic' object.id %}">Подать заявку БЕЗ темы (описав интересы)</a>
+                    {% endif %}
+                {% endif %}
+                    <p></p>
+                    <div class="border-top pt-2">
+                        <small class="text-muted">
+                            Не уверены в выборе темы? Попробуйте<a class="ml-1" href="{% url 'topics' %}">рекомендации.</a>
+                        </small>
+                    </div>
+            {% else %}
+                <div class="border-top pt-2">
+                    <small class="text-muted">
+                        <a href="{% url 'login' %}">Войдите в систему</a>, чтобы подать заявку на эту тему.
+                    </small>
+                </div>
+            {% endif %}
+        </div>
+    </article>
+{% endblock content %}

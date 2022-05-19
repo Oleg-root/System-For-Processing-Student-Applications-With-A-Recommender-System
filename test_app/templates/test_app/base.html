@@ -1,0 +1,111 @@
+{% load static %}
+<!DOCTYPE html>
+<html>
+<head>
+
+    <!-- Required meta tags -->
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+
+    <!-- Bootstrap CSS -->
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css" integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous">
+    <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.8.2/css/all.css">
+    <link rel="stylesheet" type="text/css" href="{% static 'test_app/main.css' %}">
+
+
+    {% if title %}
+        <title>Find-A-Topic - {{ title }}</title>
+    {% else %}
+        <title>Find-A-Topic</title>
+    {% endif %}
+</head>
+<body>
+    <header class="site-header">
+      <nav class="navbar navbar-expand-lg navbar-dark bg-steel fixed-top">
+        <div class="container">
+          <a class="navbar-brand mr-4" href="{% url 'topics' %}">Find-A-Topic Prototype</a>
+          <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarToggle" aria-controls="navbarToggle" aria-expanded="true" aria-label="Toggle navigation">
+          <span class="navbar-toggler-icon"></span>
+          </button>
+          <div class="collapse navbar-collapse" id="navbarToggle">
+            <div class="navbar-nav mr-auto">
+                {% if user.is_authenticated %}
+                    {% if user.profile.is_lecturer %}
+                        <a class="nav-item nav-link" href="{% url 'user-topics' user.username %}">Мои темы</a>
+                        <a class="nav-item nav-link" href="{% url 'topic-create' %}">Добавить тему</a>
+                        <a class="nav-item nav-link" href="{% url 'student-requests' %}">Заявки на темы от студентов</a>
+                    {% else %}
+                        <a class="nav-item nav-link" href="{% url 'requests-student' %}">Мои заявки на курсовые</a>
+
+                    {% endif %}
+                {% endif %}
+
+            </div>
+            <!-- Navbar Right Side -->
+            <div class="navbar-nav">
+                <form class="form-inline my-2 my-lg-0" method="POST" action="{% url 'search-venues' %}">
+                    {% csrf_token %}
+                    <input class="form-control mr-sm-2" type="search" placeholder="Введите тему" aria-label="Search" name="searched">
+                    <button class="btn btn-info" type="submit">Искать</button>
+                </form>
+              {% if user.is_authenticated %}
+                  <a class="nav-item nav-link" href="{% url 'notifications' %}"><i class="fas fa-bell"></i>{% if notif != 0 %}<span class="badge badge-info">{{ notif }}</span>{% endif %}</a>
+                  <a class="nav-item nav-link" href="{% url 'profile' %}"><i class="fa fa-user"></i></a>
+                  <a class="nav-item nav-link" href="{% url 'logout' %}"><i class="fas fa-sign-out-alt"></i></a>
+              {% else %}
+                  <a class="nav-item nav-link" href="{% url 'login' %}"><i class="fa fa-sign-in-alt" aria-hidden="true"></i> Войти</a>
+                  <a class="nav-item nav-link" href="{% url 'register' %}"><i class="fa fa-user-plus" aria-hidden="true"></i> Зарегистрироваться</a>
+              {% endif %}
+            </div>
+          </div>
+        </div>
+      </nav>
+    </header>
+
+    <main role="main" class="container">
+      <div class="row">
+        <div class="col-md-8">
+          {% if messages %}
+              {% for message in messages %}
+                  <div class="alert alert-{{ message.tags }}">
+                    {{ message }}
+                  </div>
+              {% endfor %}
+          {% endif %}
+          <!-- Здесь контент!! -->
+          {% block content %}{% endblock %}
+        </div>
+    <div class="col-md-4">
+          <div class="content-section">
+            <h3>Фильтрация по темам</h3>
+            <p class='text-muted'>Укажите критерии для фильтрации.
+                <div class="border-top pt-2"></div>
+                <form class="form-group" method="POST" action="{% url 'search-venues' %}">
+                         <ul class="list-group">
+                            {% csrf_token %}
+                            <p></p>
+                            <h5>Руководитель:</h5>
+                            <input class="form-control mr-sm-2" type="text" placeholder="Например, Ларюшина Ю.Д." aria-label="Search" name="searched_lecturers">
+
+                            <p></p>
+                            <h5>Интересы:</h5>
+                            <input class="form-control mr-sm-2" type="text" placeholder="Например, машинное обучение" aria-label="Search" name="searched_interests">
+
+                            <p></p>
+                            <p></p>
+                            <button class="btn btn-info" type="submit">Поиск</button>
+                         </ul>
+                    </form>
+            </p>
+          </div>
+        </div>
+    </main>
+    <!-- Optional JavaScript -->
+    <!-- jQuery first, then Popper.js, then Bootstrap JS -->
+    <script src="https://code.jquery.com/jquery-3.2.1.slim.min.js" integrity="sha384-KJ3o2DKtIkvYIK3UENzmM7KCkRr/rE9/Qpg6aAZGJwFDMVNA/GpGFF93hXpG5KkN" crossorigin="anonymous"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js" integrity="sha384-ApNbgh9B+Y1QKtv3Rn7W3mgPxhU9K/ScQsAP7hUibX39j7fakFPskvXusvfa0b4Q" crossorigin="anonymous"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js" integrity="sha384-JZR6Spejh4U02d8jOt6vLEHfe/JQGiRRSQQxSfFWpi1MquVdAyjUar5+76PVCmYl" crossorigin="anonymous"></script>
+
+
+</body>
+</html>

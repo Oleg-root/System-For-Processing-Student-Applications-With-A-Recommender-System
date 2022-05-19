@@ -1,0 +1,36 @@
+{% extends "test_app/base.html" %}
+{% load crispy_forms_tags %}
+{% block content %}
+    <div class="content-section">
+        <div class="media">
+            <img class="rounded-circle account-img" src="{{ user.profile.image.url }}">
+            <div class="media-body">
+                <h2 class="account-heading">{{ user.last_name}} {{ user.first_name }} {{ user.profile.patronym }}</h2>
+                <h3>{% if user.profile.is_lecturer %}Преподаватель{% else %}Студент{% endif %}</h3>
+                <p class="text-secondary">{{ user.username }} - {{ user.email }}</p>
+            </div>
+        </div>
+        <form method="POST" enctype="multipart/form-data">
+            {% csrf_token %}
+            <fieldset class="form-group">
+                <legend class="border-bottom mb-4">Интересы</legend>
+                <h4>{% for interest in user.profile.interests_as_list %}
+                <span class="badge badge-primary">{{ interest }}</span>
+                {% endfor %}</h4>
+                {% for interest in user.profile.interests_as_list %}
+                    {% if interest %}
+                    {% else %}
+                        <p class="text-muted">У вас пока нет интересов. Добавьте их ниже!</p>
+                    {% endif %}
+                {% endfor %}
+                <legend class="border-bottom mb-4"></legend>
+                {{ u_form|crispy }}
+                {{ p_form|crispy }}
+            </fieldset>
+            <div class="form-group">
+                <button class="btn btn-outline-info" type="submit">Update</button>
+            </div>
+
+        </form>
+    </div>
+{% endblock content %}

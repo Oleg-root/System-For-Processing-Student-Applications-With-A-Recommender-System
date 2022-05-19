@@ -1,0 +1,63 @@
+{% extends "test_app/base.html" %}
+{% block content %}
+    {% if page_obj.paginator.count == 0 %}
+    <h1 class="mb-3">Заявки отсутствуют!</h1> <!-- get a username passed into the URL -->
+        <p>Все заявки на курсовые и работу с преподавателями будут отображаться здесь.</p>
+        <p>Возможно, Вы ещё не подали ни одной заявки? <a href="{% url 'topics' %}">Выберите тему из списка.</a></p>
+    {% else %}
+    <h2 class="mb-3">Ваши заявки ({{ page_obj.paginator.count }})</h2> <!-- get a username passed into the URL -->
+    {% endif %}
+    {% for request in requests %}
+        <article class="media content-section">
+            <div class="media-body">
+                <div class="article-metadata">
+                    <small class="text-muted">{{ request.date_created|date:"F d, Y" }} <b>{% if request.declined %}(Заявка отклонена без объяснения причин) {% elif request.responded %}(Получен ответ по заявке){% else %}(Заявка ожидает рассмотрения){% endif %}</b></small>
+                </div>
+                <h3>{% if request.no_topic %}Заявка без темы ({{ request.associatedTopic.lecturer.last_name }} {{ request.associatedTopic.lecturer.first_name }} {{ request.associatedTopic.lecturer.profile.patronym }}){% else %}Заявка на тему: <a class="article-title" href="{% url 'topic-detail' request.associatedTopic.id %}">{{ request.associatedTopic.name_russian }}</a>{% endif %}</h3>
+                {% if request.no_topic %}
+                {% else %}
+                <p><b>Преподаватель: </b>{{ request.associatedTopic.lecturer.last_name }} {{ request.associatedTopic.lecturer.first_name }} {{ request.associatedTopic.lecturer.profile.patronym }}</p>
+                {% endif %}
+                <p><b>Ваши интересы: </b>{{ request.description }}</p>
+                {% if request.responded %}
+                    <p><b>Ответ преподавателя: </b>{{ request.lecturer_answer }}</p>
+                {% endif %}
+            {% if request.declined %}
+                <a href="{% url 'request-delete' request.id %}">
+                    <button class="btn btn-outline-danger" type="button">Отозвать заявку</button>
+                </a>
+            {% else %}
+                <a href="{% url 'request-update' request.id %}">
+                    <button class="btn btn-outline-warning" type="button">Редактировать заявку</button>
+                </a>
+                <a href="{% url 'request-delete' request.id %}">
+                    <button class="btn btn-outline-danger" type="button">Отозвать заявку</button>
+                </a>
+            {% endif %}
+                <p></p>
+
+            </div>
+        </article>
+    {% endfor %}
+    {% if is_paginated %}
+        {% if page_obj.has_previous %}
+            <a class="btn btn-outline-info mb-4" href="?page=1">First</a>
+            <a class="btn btn-outline-info mb-4" href="?page={{ page_obj.previous_page_number }}">Previous</a>
+        {% endif %}
+
+        {% for num in page_obj.paginator.page_range %}
+            {% if page_obj.number == num %}
+                <a class="btn btn-info mb-4" href="?page={{ num }}">{{ num }}</a>
+            {% elif num > page_obj.number|add:'-3' and num < page_obj.number|add:'3' %}
+                <a class="btn btn-outline-info mb-4" href="?page={{ num }}">{{ num }}</a>
+            {% endif %}
+
+        {% endfor %}
+
+        {% if page_obj.has_next %}
+            <a class="btn btn-outline-info mb-4" href="?page={{ page_obj.next_page_number }}">Next</a>
+            <a class="btn btn-outline-info mb-4" href="?page={{ page_obj.paginator.num_pages }}">Last</a>
+        {% endif %}
+
+    {% endif %}
+{% endblock content %}

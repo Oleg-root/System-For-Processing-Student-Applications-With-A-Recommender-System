@@ -1,0 +1,17 @@
+{% extends "test_app/base.html" %}
+{% block content %}
+    <div class="content-section">
+        <form method="POST" enctype="multipart/form-data">
+            {% csrf_token %}
+            <fieldset class="form-group">
+                <legend class="border-bottom mb-4">Отклонить заявку студента без объяснения причин</legend>
+                <h2>Вы уверены, что хотите отклонить эту заявку студента?</h2>
+            </fieldset>
+            <div class="form-group">
+                <button class="btn btn-outline-danger" type="submit">Да, отклонить заявку</button>
+                <a class="btn btn-outline-secondary" href="{% url 'student-requests' %}">Отмена</a>
+            </div>
+        </form>
+    </div>
+{% endblock content %}
+

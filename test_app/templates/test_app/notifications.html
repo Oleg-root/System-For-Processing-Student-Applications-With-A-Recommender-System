@@ -1,0 +1,42 @@
+{% extends "test_app/base.html" %}
+{% block content %}
+    {% if page_obj.paginator.count == 0 %}
+    <h1 class="mb-3">У вас нет уведомлений!</h1> <!-- get a username passed into the URL -->
+        <p>Все важное отобразится здесь. <a href="{% url 'topics' %}">Перейти на главную страницу.</a></p>
+    {% else %}
+    <h1 class="mb-3">Доступные уведомления ({{ page_obj.paginator.count }})</h1> <!-- get a username passed into the URL -->
+    {% endif %}
+    {% for notification in notifications %}
+        <article class="media content-section">
+            <div class="media-body">
+                <div class="article-metadata">
+                    <small class="text-muted">{{ notification.date_created|date:"F d, Y" }}</small>
+                    <a class="btn btn-outline-danger btn-sm mt-2 mb-2" href="{% url 'notification-delete' notification.id %}">Delete</a>
+                </div>
+                <h2><a class="article-title">{{ notification.title }}</a></h2>
+                <p class="article-content">{{ notification.content }}</p>
+            </div>
+        </article>
+    {% endfor %}
+    {% if is_paginated %}
+        {% if page_obj.has_previous %}
+            <a class="btn btn-outline-info mb-4" href="?page=1">First</a>
+            <a class="btn btn-outline-info mb-4" href="?page={{ page_obj.previous_page_number }}">Previous</a>
+        {% endif %}
+
+        {% for num in page_obj.paginator.page_range %}
+            {% if page_obj.number == num %}
+                <a class="btn btn-info mb-4" href="?page={{ num }}">{{ num }}</a>
+            {% elif num > page_obj.number|add:'-3' and num < page_obj.number|add:'3' %}
+                <a class="btn btn-outline-info mb-4" href="?page={{ num }}">{{ num }}</a>
+            {% endif %}
+
+        {% endfor %}
+
+        {% if page_obj.has_next %}
+            <a class="btn btn-outline-info mb-4" href="?page={{ page_obj.next_page_number }}">Next</a>
+            <a class="btn btn-outline-info mb-4" href="?page={{ page_obj.paginator.num_pages }}">Last</a>
+        {% endif %}
+
+    {% endif %}
+{% endblock content %}
