@@ -18,3 +18,7 @@ class RequestResponseForm(forms.ModelForm):
         model = RequestResponse
         fields = ['content']
 
+class RequestResponseForm_student(forms.ModelForm):
+    class Meta:
+        model = RequestResponse
+        fields = ['content']

@@ -11,7 +11,7 @@
         <article class="media content-section">
             <div class="media-body">
                 <div class="article-metadata">
-                    <small class="text-muted">{{ request.date_created|date:"F d, Y" }} <b>{% if request.declined %}(Заявка отклонена без объяснения причин) {% elif request.responded %}(Получен ответ по заявке){% else %}(Заявка ожидает рассмотрения){% endif %}</b></small>
+                    <small class="text-muted">{{ request.date_created|date:"F d, Y" }} <b>{% if request.declined %}(Заявка отклонена без объяснения причин) {% elif request.responded %}(Получен ответ по заявке){% elif request.accepted %}(Заявка на тему принята! Поздравляем!){% else %}(Заявка ожидает рассмотрения){% endif %}</b></small>
                 </div>
                 <h3>{% if request.no_topic %}Заявка без темы ({{ request.associatedTopic.lecturer.last_name }} {{ request.associatedTopic.lecturer.first_name }} {{ request.associatedTopic.lecturer.profile.patronym }}){% else %}Заявка на тему: <a class="article-title" href="{% url 'topic-detail' request.associatedTopic.id %}">{{ request.associatedTopic.name_russian }}</a>{% endif %}</h3>
                 {% if request.no_topic %}
@@ -22,7 +22,23 @@
                 {% if request.responded %}
                     <p><b>Ответ преподавателя: </b>{{ request.lecturer_answer }}</p>
                 {% endif %}
+                {% if request.responded_by_student %}
+                    <p><b>Ваш ответ: </b>{{ request.student_answer }}</p>
+                {% endif %}
             {% if request.declined %}
+                <a href="{% url 'request-delete' request.id %}">
+                    <button class="btn btn-outline-danger" type="button">Отозвать заявку</button>
+                </a>
+            {% elif request.accepted %}
+            {% elif request.responded %}
+                {% if request.responded_by_student %} {% else %}
+                <a href="{% url 'student-response' request.id %}">
+                        <button class="btn btn-outline-info" type="button">Ответить преподавателю</button>
+                </a>
+                {% endif %}
+                <a href="{% url 'request-update' request.id %}">
+                    <button class="btn btn-outline-warning" type="button">Редактировать заявку</button>
+                </a>
                 <a href="{% url 'request-delete' request.id %}">
                     <button class="btn btn-outline-danger" type="button">Отозвать заявку</button>
                 </a>

@@ -19,6 +19,15 @@
                     <span class="badge badge-primary">{{ interest }}</span>
                 {% endfor %}
             </p>
+            {% if topic.is_taken %}
+                {% if object.lecturer == user %}
+                    <p><b>Студент, принятый на эту тему: </b>{{ object.student_who_took }}</p>
+                {% else %}
+                    {% if user.profile.is_lecturer %} {% else %}
+                    <p><b>Эта заявка уже занята.</b> Подайте заявку без темы или найдите похожие, нажав на рекомендации ниже.</p>
+                    {% endif %}
+                {% endif %}
+            {% endif %}
             {% if object.lecturer == user %}
                     <div>
                         <a class="btn btn-outline-warning" href="{% url 'topic-update' object.id %}">Редактировать</a>
@@ -27,15 +36,22 @@
                 {% endif %}
             {% if user.is_authenticated %}
                 {% if object.lecturer != user %}
-                    {% if user.is_lecturer %} {% else %}
-                        <a class="btn btn-outline-info" href="{% url 'create-request' object.id %}">Подать заявку на эту тему</a>
-                        <a class="btn btn-outline-info" href="{% url 'create-request-no-topic' object.id %}">Подать заявку БЕЗ темы (описав интересы)</a>
+                    {% if user.profile.is_lecturer %} {% else %}
+                        {% if topic.is_taken %}
+                            <a class="btn btn-outline-info" href="{% url 'create-request-no-topic' object.id %}">Подать заявку БЕЗ темы (описав интересы)</a>
+                        {% else %}
+                            <a class="btn btn-outline-info" href="{% url 'create-request' object.id %}">Подать заявку на эту тему</a>
+                            <a class="btn btn-outline-info" href="{% url 'create-request-no-topic' object.id %}">Подать заявку БЕЗ темы (описав интересы)</a>
+                        {% endif %}
                     {% endif %}
                 {% endif %}
                     <p></p>
                     <div class="border-top pt-2">
                         <small class="text-muted">
-                            Не уверены в выборе темы? Попробуйте<a class="ml-1" href="{% url 'topics' %}">рекомендации.</a>
+                             <form class="form-group" method="POST" action="{% url 'search-venues' %}">
+                                 {% csrf_token %}
+                                 <button type="submit" class="btn btn-link btn-sm" name="recommend" value="{{ object.name_russian }}">Не уверены в выборе темы? Попробуйте рекомендации по этой теме.</button>
+                             </form>
                         </small>
                     </div>
             {% else %}

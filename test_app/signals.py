@@ -11,16 +11,16 @@ def save_request(sender, instance, created, **kwargs):
     if created:
         Notification.objects.create(title='Новая заявка от студента',
                                     receiver=instance.associatedTopic.lecturer,
-                                    content='%s отправил вам заявку на взаимодействие.'
-                                        ' \nПроверьте её во вкладке "Заявки на темы от студентов"' % instance.student)
+                                    content='%s отправил(а) вам заявку на взаимодействие.'
+                                        ' \nПроверьте её во вкладке "Заявки на темы от студентов"' % instance.student.last_name + ' ' + instance.student.first_name + ' ' + instance.student.profile.patronym)
 
 @receiver(post_save, sender=RequestResponse)
 def save_response(sender, instance, created, **kwargs):
     if created:
         Notification.objects.create(title='Новый ответ на одну из ваших заявок',
                                     receiver=instance.associatedRequest.student,
-                                    content='%s ответил вам по заявке.'
-                                        ' \nПроверьте ответ во вкладке "Мои заявки на курсовые"' % instance.lecturer)
+                                    content='%s ответил(а) вам по заявке.'
+                                        ' \nПроверьте ответ во вкладке "Мои заявки на курсовые"' % instance.lecturer.last_name + ' ' + instance.lecturer.first_name + ' ' + instance.lecturer.profile.patronym)
 
 @receiver(post_save, sender=Topic)
 def add_to_csv(sender, instance, created, **kwargs):

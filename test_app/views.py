@@ -14,7 +14,7 @@ from django.views.generic import (
     DeleteView,
 )
 from .models import Notification, Topic, StudentRequestForTopic, RequestResponse
-from .forms import TopicForm, StudentRequestForTopicForm, RequestResponseForm
+from .forms import TopicForm, StudentRequestForTopicForm, RequestResponseForm, RequestResponseForm_student
 
 
 def make_dataframe_from_topics():
@@ -63,12 +63,19 @@ def search_venues(request):
     if request.method == "POST":
         if 'searched' in request.POST:
             searched = request.POST.get('searched')
-            make_dataframe_from_topics()
             results = make_recommendation(pd.read_csv('media/topic_db.csv'), searched)
             topics = []
 
             for i in range(0, len(results)):
                 topics.append(Topic.objects.get(id=results[i][1]))
+        elif 'recommend' in request.POST:
+            recommend = request.POST.get('recommend', '')
+            results = make_recommendation(pd.read_csv('media/topic_db.csv'), recommend)
+            topics = []
+
+            for i in range(0, len(results)):
+                topics.append(Topic.objects.get(id=results[i][1]))
+            return render(request, 'test_app/search_venues.html', {'searched': recommend, 'topics': topics})
 
         elif 'searched_lecturers' and 'searched_interests' in request.POST:
             searched_lecturers = request.POST.get('searched_lecturers')
@@ -246,7 +253,54 @@ def create_requestResponse(request, pk):
 
             return redirect('/login/?next=/request_response/')
 
-    return render(request, 'test_app/request_response.html', {'form': form})
+    return render(request, 'test_app/request_response.html', {'form': form, 'StudentRequestForTopic': StudentRequestForTopic.objects.get(id=pk)})
+
+def accept_studentRequest(request, pk):
+    if request.method == "POST":
+        s = StudentRequestForTopic.objects.get(id=pk)
+        other_requests = StudentRequestForTopic.objects.filter(associatedTopic__name_russian=s.associatedTopic.name_russian, no_topic=False).exclude(id=pk)
+        if other_requests:
+            other_requests.declined = True
+            for newrequest in other_requests:
+                new = StudentRequestForTopic.objects.create(student=newrequest.student,
+                                                            receiver=s.receiver,
+                                                            associatedTopic=s.associatedTopic,
+                                                            description='[' + s.associatedTopic.name_russian + ']' + ' - ' + newrequest.description,
+                                                            no_topic=True)
+                new.save()
+            other_requests.delete()
+        associated_topic = s.associatedTopic
+        s.accepted = True
+        associated_topic.is_taken = True
+        associated_topic.student_who_took = s.student.last_name + ' ' + s.student.first_name + ' ' + s.student.profile.patronym
+        associated_topic.save()
+        s.save()
+        messages.success(request, f'Заявка принята!')
+        return redirect('/student_requests/')
+    return render(request, 'test_app/request_confirm_accept.html', {'StudentRequestForTopic': StudentRequestForTopic.objects.get(id=pk)})
+
+def respond_to_lecturer_response(request, pk):
+    if request.method == "POST":
+        form = RequestResponseForm_student(request.POST)
+        if form.is_valid():
+            s = StudentRequestForTopic.objects.get(id=pk)
+            s.student_answer = form.cleaned_data.get('content')
+            s.responded_by_student = True
+            s.save()
+            messages.success(request, f'Ответ успешно отправлен преподавателю!')
+            return redirect('topics')
+    else:
+        if request.user.is_authenticated:
+            if request.user != StudentRequestForTopic.objects.get(id=pk).student:
+                return redirect('topics')
+
+            form = RequestResponseForm_student()
+        else:
+            messages.warning(request, f'Войдите в систему, чтобы просматривать данную страницу.')
+
+            return redirect('/login/?next=/student_response/')
+
+    return render(request, 'test_app/student_response.html', {'form': form, 'StudentRequestForTopic': StudentRequestForTopic.objects.get(id=pk)})
 
 def decline_studentRequest(request, pk):
     if request.method == "POST":
@@ -254,11 +308,11 @@ def decline_studentRequest(request, pk):
         s.declined = True
         s.save()
         return redirect('/student_requests/')
-    return render(request, 'test_app/request_confirm_decline.html')
+    return render(request, 'test_app/request_confirm_decline.html', {'StudentRequestForTopic': StudentRequestForTopic.objects.get(id=pk)})
 
 class StudentRequestDeleteView(LoginRequiredMixin, UserPassesTestMixin, DeleteView):
     model = StudentRequestForTopic
-    success_url = '/student_requests/'
+    success_url = '/requests/'
     template_name = 'test_app/request_confirm_delete.html'
     def test_func(self):
         r = self.get_object()

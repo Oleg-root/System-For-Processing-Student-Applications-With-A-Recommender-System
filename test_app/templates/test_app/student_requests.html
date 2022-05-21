@@ -5,35 +5,46 @@
         <p>Все заявки на взаимодействие с Вами будут отображаться здесь.</p>
         <p>Возможно, Вы ещё не добавили ни одной темы? <a href="{% url 'topic-create' %}">Сделайте это здесь.</a></p>
     {% else %}
-    <h2 class="mb-3">Доступные заявки ({{ page_obj.paginator.count }})</h2> <!-- get a username passed into the URL -->
+    <h2 class="mb-3">Доступные заявки:</h2> <!-- get a username passed into the URL -->
     {% endif %}
     {% for request in requests %}
-        <article class="media content-section">
-            <div class="media-body">
-                <div class="article-metadata">
-                    <small class="text-muted">{{ request.date_created|date:"F d, Y" }} <b>{% if request.declined %}(Заявка отклонена без объяснения причин){% elif request.responded %}(Ответ по заявке отправлен){% else %}(Заявка требует рассмотрения){% endif %}</b></small>
-                </div>
-                <h3><a class="article-title">Новая заявка: {{ request.student.last_name }} {{ request.student.first_name }}</a></h3>
-                <p class="article-content">{% if request.no_topic %}Тема не указана, студент хочет предложить своё.{% else %}На тему: <a class="ml-0" href="{% url 'topic-detail' request.associatedTopic.id %}">{{ request.associatedTopic.name_russian }}</a>
-                {% endif %} <p></p>
-                <p></p>
-                {% if request.responded %}
-                    <b>Ваш ответ: </b>{{ request.lecturer_answer }}
+        {% if request.accepted %}
+        {% else %}
+            <article class="media content-section">
+                <div class="media-body">
+                    <div class="article-metadata">
+                        <small class="text-muted">{{ request.date_created|date:"F d, Y" }} <b>{% if request.declined %}(Заявка отклонена без объяснения причин){% elif request.responded_by_student %}(Получен ответ от студента){% elif request.responded %}(Ответ по заявке отправлен. Ожидаем ответа студента){% else %}(Заявка требует рассмотрения){% endif %}</b></small>
+                    </div>
+                    <h3><a class="article-title">Новая заявка: {{ request.student.last_name }} {{ request.student.first_name }}</a></h3>
+                    <p class="article-content">{% if request.no_topic %}Тема не указана, студент хочет предложить своё.{% else %}На тему: <a class="ml-0" href="{% url 'topic-detail' request.associatedTopic.id %}">{{ request.associatedTopic.name_russian }}</a>
+                    {% endif %} <p></p>
+                    <p></p>
+                    <p></p>
+                    <b>Интересы студента: </b>{{ request.description }}</p>
+                    {% if request.responded %}
+                        <p><b>Ваш ответ: </b>{{ request.lecturer_answer }}</p>
+                    {% endif %}
+                    {% if request.responded_by_student %}
+                        <p><b>Ответ студента: </b>{{ request.student_answer }}</p>
+                    {% endif %}
+                {% if request.declined %} {% else %}
+                    <a href="{% url 'request-accept' request.id %}">
+                        <button class="btn btn-outline-success" type="button">Принять заявку</button>
+                    </a>
+                    {% if request.responded %}{% else %}
+                    <a href="{% url 'request-response' request.id %}">
+                        <button class="btn btn-outline-info" type="button">Ответить на заявку</button>
+                    </a>
+                    {% endif %}
+                    <a href="{% url 'request-decline' request.id %}">
+                        <button class="btn btn-outline-danger" type="button">Отклонить (без объяснения причин)</button>
+                    </a>
                 {% endif %}
-                <p></p>
-                <b>Интересы студента: </b>{{ request.description }}</p>
-            {% if request.declined %} {% else %}
-                <a href="{% url 'request-response' request.id %}">
-                    <button class="btn btn-outline-info" type="button">Ответить на заявку</button>
-                </a>
-                <a href="{% url 'request-decline' request.id %}">
-                    <button class="btn btn-outline-danger" type="button">Отклонить (без объяснения причин)</button>
-                </a>
-            {% endif %}
-                <p></p>
+                    <p></p>
 
-            </div>
-        </article>
+                </div>
+            </article>
+        {% endif %}
     {% endfor %}
     {% if is_paginated %}
         {% if page_obj.has_previous %}

@@ -4,8 +4,10 @@
         <form method="POST" enctype="multipart/form-data">
             {% csrf_token %}
             <fieldset class="form-group">
-                <legend class="border-bottom mb-4">Удалить тему</legend>
-                <h2>Вы уверены, что хотите удалить тему "{{ object.name_russian }}"?</h2>
+                <legend class="border-bottom mb-4">Удаление темы</legend>
+                <p><b>Название темы: </b><a class="article-title" href="{% url 'topic-detail' object.id %}">{{ object.name_russian }}</a></p>
+                <p><b>Описание темы: </b>{% if object.description %}{{ object.description }}{% else %}Отсутствует.{% endif %}</p>
+                <h5>Вы уверены, что хотите удалить эту тему?</h5>
             </fieldset>
             <div class="form-group">
                 <button class="btn btn-outline-danger" type="submit">Да, удалить</button>

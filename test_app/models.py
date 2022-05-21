@@ -14,6 +14,8 @@ class Topic(models.Model):
     name_english = models.CharField('Название на английском', max_length=300)
     description = models.TextField('Краткое описание темы')
     lecturer = models.ForeignKey(User, on_delete=models.CASCADE)
+    is_taken = models.BooleanField(default=False)
+    student_who_took = models.CharField(default='', max_length=200)
     date_created = models.DateTimeField(default=timezone.now)
 
     def __str__(self):
@@ -25,8 +27,11 @@ class StudentRequestForTopic(models.Model):
     receiver = models.CharField(max_length=200)
     description = models.TextField('Опишите свои интересы')
     responded = models.BooleanField(default=False)
+    responded_by_student = models.BooleanField(default=False)
     lecturer_answer = models.TextField(max_length=2000, default='')
+    student_answer = models.TextField(max_length=2000, default='')
     declined = models.BooleanField(default=False)
+    accepted = models.BooleanField(default=False)
     no_topic = models.BooleanField(default=False)
     date_created = models.DateTimeField(default=timezone.now)
 

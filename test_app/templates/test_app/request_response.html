@@ -5,7 +5,9 @@
         <form method="POST" enctype="multipart/form-data">
             {% csrf_token %}
             <fieldset class="form-group">
-                <legend class="border-bottom mb-4">Ответ студенту</legend>
+                <legend class="border-bottom mb-4">Ответ студенту ({{ StudentRequestForTopic.student.last_name }} {{ StudentRequestForTopic.student.first_name }} {{ StudentRequestForTopic.student.profile.patronym }})</legend>
+                <p><b>По теме: </b><a class="article-title" href="{% url 'topic-detail' StudentRequestForTopic.associatedTopic.id %}">{{ StudentRequestForTopic.associatedTopic }}</a></p>
+                <p><b>Интересы студента: </b>{{ StudentRequestForTopic.description }}</p>
                 <p>Здесь Вы можете поинтересоваться у студента о чём-либо, принять заявку, и просто оставить контакты для дальнейшей связи.
                     </p>
 
