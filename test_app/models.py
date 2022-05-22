@@ -25,7 +25,7 @@ class StudentRequestForTopic(models.Model):
     student = models.ForeignKey(User, on_delete=models.CASCADE)
     associatedTopic = models.ForeignKey(Topic, on_delete=models.CASCADE, default=0)
     receiver = models.CharField(max_length=200)
-    description = models.TextField('Опишите свои интересы')
+    description = models.TextField('Опишите, что Вы хотите предложить:')
     responded = models.BooleanField(default=False)
     responded_by_student = models.BooleanField(default=False)
     lecturer_answer = models.TextField(max_length=2000, default='')

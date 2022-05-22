@@ -5,12 +5,14 @@
         <form method="POST" enctype="multipart/form-data">
             {% csrf_token %}
             <fieldset class="form-group">
-                <legend class="border-bottom mb-4">Подача заявки на взаимодействие с преподавателем без темы</legend>
-
+                <legend class="border-bottom mb-4">Подача заявки на взаимодействие с преподавателем без темы ({{ topic.lecturer.last_name }} {{ topic.lecturer.first_name }} {{ topic.lecturer.profile.patronym }})</legend>
+                <p><b>Переход выполнен с темы:</b> {{ topic.name_russian }}</p>
+                <p><b>Интересы преподавателя:</b> {% for interest in topic.lecturer.profile.interests_as_list %} <span class="badge badge-primary">{{ interest }}</span> {% endfor %}</p>
                 {{ form|crispy }}
             </fieldset>
             <div class="form-group">
                 <button class="btn btn-outline-info" type="submit">Подать заявку</button>
+                <a class="btn btn-outline-secondary" href="{% url 'topic-detail' topic.id %}">Отмена</a>
             </div>
         </form>
     </div>

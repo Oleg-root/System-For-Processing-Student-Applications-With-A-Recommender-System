@@ -80,13 +80,23 @@ def search_venues(request):
         elif 'searched_lecturers' and 'searched_interests' in request.POST:
             searched_lecturers = request.POST.get('searched_lecturers')
             searched_interests = request.POST.get('searched_interests')
-            results = make_recommendation(pd.read_csv('media/topic_db.csv'), str(searched_lecturers) + ' ' + str(searched_interests))
-            topics = []
-
-            for i in range(0, len(results)):
-                topics.append(Topic.objects.get(id=results[i][1]))
-
-            return render(request, 'test_app/search_venues.html', {'searched_lecturers': searched_lecturers, 'searched_interests': searched_interests, 'topics': topics})
+            results = ''
+            if 'checks[]' in request.POST:
+                results = make_recommendation(pd.read_csv('media/topic_db.csv'), str(searched_lecturers) + ' ' + str(searched_interests) + ' ' + str(request.user.profile.interests))
+                topics = []
+                for i in range(0, len(results)):
+                    topics.append(Topic.objects.get(id=results[i][1]))
+                return render(request, 'test_app/search_venues.html',
+                              {'searched_lecturers': searched_lecturers, 'searched_interests': searched_interests,
+                               'topics': topics, 'checks': request.POST.get('checks[]')})
+            else:
+                results = make_recommendation(pd.read_csv('media/topic_db.csv'), str(searched_lecturers) + ' ' + str(searched_interests))
+                topics = []
+                for i in range(0, len(results)):
+                    topics.append(Topic.objects.get(id=results[i][1]))
+                return render(request, 'test_app/search_venues.html',
+                              {'searched_lecturers': searched_lecturers, 'searched_interests': searched_interests,
+                               'topics': topics})
 
         return render(request, 'test_app/search_venues.html', {'searched': searched, 'topics': topics })
     else:
@@ -183,7 +193,7 @@ def create_studentRequest(request, pk):
         else:
             messages.warning(request, f'Войдите в систему, чтобы просматривать данную страницу')
             return redirect('/login/?next=/create_request')
-    return render(request, 'test_app/create_request.html', {'form': form})
+    return render(request, 'test_app/create_request.html', {'form': form, 'topic': Topic.objects.get(id=pk)})
 
 def create_studentRequestNoTopic(request, pk):
     if request.method == "POST":
@@ -207,7 +217,7 @@ def create_studentRequestNoTopic(request, pk):
         else:
             messages.warning(request, f'Войдите в систему, чтобы просматривать данную страницу')
             return redirect('/login/?next=/create_request')
-    return render(request, 'test_app/create_request_no_topic.html', {'form': form})
+    return render(request, 'test_app/create_request_no_topic.html', {'form': form, 'topic': Topic.objects.get(id=pk)})
 
 class StudentRequestListView(LoginRequiredMixin, ListView):
     model = StudentRequestForTopic

@@ -7,12 +7,12 @@
                 <legend class="border-bottom mb-4">Удаление заявки на курсовую работу или ВКР</legend>
                 <p><b>Название темы: </b>{% if object.no_topic %}Отсутствует. Заявка подана без темы.{% else %}<a class="article-title" href="{% url 'topic-detail' object.associatedTopic.id %}">{{ object.associatedTopic }}</a>{% endif %}</p>
                 <p><b>Преподаватель: </b>{{ object.associatedTopic.lecturer.last_name }} {{ object.associatedTopic.lecturer.first_name }} {{ object.associatedTopic.lecturer.profile.patronym}}</p>
-                <p><b>Ваши интересы: </b>{{ object.description }}</p>
+                <p><b>Ваш комментарий: </b>{{ object.description }}</p>
                 <h5>Вы уверены, что хотите удалить эту заявку?</h5>
             </fieldset>
             <div class="form-group">
                 <button class="btn btn-outline-danger" type="submit">Да, удалить заявку</button>
-                <a class="btn btn-outline-secondary" href="{% url 'student-requests' %}">Отмена</a>
+                <a class="btn btn-outline-secondary" href="{% url 'requests-student' %}">Отмена</a>
             </div>
         </form>
     </div>

@@ -20,7 +20,10 @@
                     {% endif %} <p></p>
                     <p></p>
                     <p></p>
-                    <b>Интересы студента: </b>{{ request.description }}</p>
+                    <b>Комментарий студента: </b>{{ request.description }}</p>
+                    {% if request.student.profile.interests %}
+                        <b>Интересы студента: </b>{{ request.student.profile.interests }}</p>
+                    {% endif %}
                     {% if request.responded %}
                         <p><b>Ваш ответ: </b>{{ request.lecturer_answer }}</p>
                     {% endif %}

@@ -6,7 +6,10 @@
             <fieldset class="form-group">
                 <legend class="border-bottom mb-4">Отклонить заявку студента без объяснения причин ({{ StudentRequestForTopic.student.last_name }} {{ StudentRequestForTopic.student.first_name }} {{ StudentRequestForTopic.student.profile.patronym }})</legend>
                 <p><b>На тему: </b><a class="article-title" href="{% url 'topic-detail' StudentRequestForTopic.associatedTopic.id %}">{{ StudentRequestForTopic.associatedTopic }}</a></p>
-                <p><b>Интересы студента: </b>{{ StudentRequestForTopic.description }}</p>
+                <p><b>Комментарий студента: </b>{{ StudentRequestForTopic.description }}</p>
+                {% if StudentRequestForTopic.student.profile.interests %}
+                    <p><b>Интересы студента: </b>{{ StudentRequestForTopic.student.profile.interests }}</p>
+                {% endif %}
                 <h5>Вы уверены, что хотите отклонить эту заявку студента?</h5>
             </fieldset>
             <div class="form-group">

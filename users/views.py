@@ -16,7 +16,7 @@ def register(request):
                     variables.append(form.cleaned_data.get('patronym'))
                     variables.append(form.cleaned_data.get('student_or_lecturer'))
                 form.save()
-                messages.success(request, f'Аккаунт создан! Теперь вы можете войти.')
+                messages.success(request, f'Аккаунт создан! Теперь вы можете войти. Не забудьте перейти в профиль и указать свои интересы!')
                 variables.clear()
                 return redirect('login')
         else:

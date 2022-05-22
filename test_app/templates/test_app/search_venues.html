@@ -83,6 +83,9 @@
     {% if searched_lecturers %}
         <p><b>Предпочтительные преподаватели:</b> {{ searched_lecturers }}</p>
     {% endif %}
+    {% if checks %}
+        <p><b>Учитываются Ваши собственные интересы:</b> {{ user.profile.interests }}</p>
+    {% endif %}
         {% if topics %}
             {% for topic in topics %}
                 <article class="media content-section">
@@ -153,6 +156,14 @@
                             <input class="form-control mr-sm-2" type="text" placeholder="Например, машинное обучение" aria-label="Search" name="searched_interests">
 
                             <p></p>
+                            {% if user.profile.interests %}
+                                <div class="form-check">
+                                    <input class="form-check-input" type="checkbox" value="1" id="defaultCheck1" name="checks[]">
+                                    <label class="form-check-label" for="defaultCheck1">
+                                        Учитывать Ваши собственные интересы (Прописываются в профиле)
+                                    </label>
+                                </div>
+                            {% endif %}
                             <p></p>
                             <button class="btn btn-info" type="submit">Поиск</button>
                          </ul>

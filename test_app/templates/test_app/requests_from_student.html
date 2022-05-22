@@ -18,7 +18,7 @@
                 {% else %}
                 <p><b>Преподаватель: </b>{{ request.associatedTopic.lecturer.last_name }} {{ request.associatedTopic.lecturer.first_name }} {{ request.associatedTopic.lecturer.profile.patronym }}</p>
                 {% endif %}
-                <p><b>Ваши интересы: </b>{{ request.description }}</p>
+                <p><b>Ваш комментарий: </b>{{ request.description }}</p>
                 {% if request.responded %}
                     <p><b>Ответ преподавателя: </b>{{ request.lecturer_answer }}</p>
                 {% endif %}

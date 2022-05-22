@@ -7,7 +7,10 @@
             <fieldset class="form-group">
                 <legend class="border-bottom mb-4">Ответ студенту ({{ StudentRequestForTopic.student.last_name }} {{ StudentRequestForTopic.student.first_name }} {{ StudentRequestForTopic.student.profile.patronym }})</legend>
                 <p><b>По теме: </b><a class="article-title" href="{% url 'topic-detail' StudentRequestForTopic.associatedTopic.id %}">{{ StudentRequestForTopic.associatedTopic }}</a></p>
-                <p><b>Интересы студента: </b>{{ StudentRequestForTopic.description }}</p>
+                <p><b>Комментарий студента: </b>{{ StudentRequestForTopic.description }}</p>
+                {% if StudentRequestForTopic.student.profile.interests %}
+                    <p><b>Интересы студента: </b>{{ StudentRequestForTopic.student.profile.interests }}</p>
+                {% endif %}
                 <p>Здесь Вы можете поинтересоваться у студента о чём-либо, принять заявку, и просто оставить контакты для дальнейшей связи.
                     </p>
 
@@ -15,6 +18,7 @@
             </fieldset>
             <div class="form-group">
                 <button class="btn btn-outline-info" type="submit">Ответить</button>
+                <a class="btn btn-outline-secondary" href="{% url 'student-requests' %}">Отмена</a>
             </div>
         </form>
     </div>

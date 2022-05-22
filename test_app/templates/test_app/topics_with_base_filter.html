@@ -134,8 +134,15 @@
                             <p></p>
                             <h5>Интересы:</h5>
                             <input class="form-control mr-sm-2" type="text" placeholder="Например, машинное обучение" aria-label="Search" name="searched_interests">
-
                             <p></p>
+                            {% if user.profile.interests %}
+                                <div class="form-check">
+                                    <input class="form-check-input" type="checkbox" value="1" id="defaultCheck1" name="checks[]">
+                                    <label class="form-check-label" for="defaultCheck1">
+                                        Учитывать Ваши собственные интересы (Прописываются в профиле)
+                                    </label>
+                                </div>
+                            {% endif %}
                             <p></p>
                             <button class="btn btn-info" type="submit">Поиск</button>
                          </ul>
